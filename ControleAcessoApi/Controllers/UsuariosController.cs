@@ -16,19 +16,12 @@ namespace ControleAcessoApi.Controllers
             _context = context;
         }
 
-        [HttpGet]
-        public IActionResult GetUsuarios()
-        {
-            var usuarios = _context.Usuarios.ToList();
-            return Ok(usuarios);
-        }
-
         [HttpPost]
         public IActionResult CreateUsuario([FromBody] Usuario usuario)
         {
             _context.Usuarios.Add(usuario);
             _context.SaveChanges();
-            return CreatedAtAction(nameof(GetUsuarios), new { id = usuario.Id }, usuario);
+            return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id }, usuario);
         }
 
         [HttpGet("{id}")]

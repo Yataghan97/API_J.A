@@ -1,13 +1,14 @@
-using ControleAcessoApi.Models;  // Adicionando a diretiva using correta
+using System.Collections.Generic;
+using ControleAcessoApi.Models;
+using System.ComponentModel.DataAnnotations;
 
-namespace ControleAcessoApi.Models
+
+public class Usuario
 {
-    public class Usuario
-    {
-        public int Id { get; set; }
-        public string Nome { get; set; }
-        
-        // Relacionamento com UsuarioAcesso
-        public ICollection<UsuarioAcesso> UsuarioAcessos { get; set; } = new List<UsuarioAcesso>();
-    }
+    public int Id { get; set; }
+
+    [Required]
+    public string Nome { get; set; }
+
+    public ICollection<UsuarioAcesso> UsuarioAcessos { get; set; } = new List<UsuarioAcesso>();
 }

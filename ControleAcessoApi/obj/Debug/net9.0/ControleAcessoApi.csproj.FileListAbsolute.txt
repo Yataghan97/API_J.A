@@ -5,6 +5,7 @@ C:\Users\Yataghan\Desktop\Faculdade\J.A\API Knapp\ControleAcessoApi\obj\Debug\ne
 C:\Users\Yataghan\Desktop\Faculdade\J.A\API Knapp\ControleAcessoApi\obj\Debug\net9.0\ControleAcessoApi.csproj.CoreCompileInputs.cache
 C:\Users\Yataghan\Desktop\Faculdade\J.A\API Knapp\ControleAcessoApi\obj\Debug\net9.0\ControleAcessoApi.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\Yataghan\Desktop\Faculdade\J.A\API Knapp\ControleAcessoApi\obj\Debug\net9.0\ControleAcessoApi.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Yataghan\Desktop\Faculdade\J.A\API Knapp\ControleAcessoApi\obj\Debug\net9.0\ControleAcessoApi.sourcelink.json
 C:\Users\Yataghan\Desktop\Faculdade\J.A\API Knapp\ControleAcessoApi\bin\Debug\net9.0\appsettings.Development.json
 C:\Users\Yataghan\Desktop\Faculdade\J.A\API Knapp\ControleAcessoApi\bin\Debug\net9.0\appsettings.json
 C:\Users\Yataghan\Desktop\Faculdade\J.A\API Knapp\ControleAcessoApi\bin\Debug\net9.0\ControleAcessoApi.staticwebassets.endpoints.json
