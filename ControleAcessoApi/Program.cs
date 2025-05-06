@@ -1,4 +1,5 @@
 namespace ControleAcessoApi
+
 {
     using Microsoft.EntityFrameworkCore;
     using ControleAcessoApi.Data;
@@ -38,6 +39,10 @@ namespace ControleAcessoApi
             // Adicionando controladores
             builder.Services.AddControllers();
 
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+
+
             // Constrói o app
             var app = builder.Build();
 
@@ -45,6 +50,9 @@ namespace ControleAcessoApi
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI();
+                
             }
 
             app.UseHttpsRedirection();

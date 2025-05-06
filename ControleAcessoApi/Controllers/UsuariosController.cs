@@ -35,6 +35,13 @@ namespace ControleAcessoApi.Controllers
             return Ok(usuario);
         }
 
+        [HttpGet]
+        public IActionResult GetAllUsuarios()
+        {
+            var usuarios = _context.Usuarios.ToList();
+            return Ok(usuarios);
+        }
+
         [HttpPut("{id}")]
         public IActionResult UpdateUsuario(int id, [FromBody] Usuario usuario)
         {
