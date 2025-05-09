@@ -1,63 +1,68 @@
+using Microsoft.EntityFrameworkCore;
+using ControleAcessoApi.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 namespace ControleAcessoApi
-
 {
-    using Microsoft.EntityFrameworkCore;
-    using ControleAcessoApi.Data;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.IdentityModel.Tokens;
-    using System.Text;
-
     public class Program
     {
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Configuração do banco de dados SQL Server
+            // Banco de dados
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            // Recupera a chave JWT do appsettings.json e valida se foi configurada
+            // JWT Key
             var jwtKey = builder.Configuration["Jwt:Key"]
                 ?? throw new InvalidOperationException("A chave JWT ('Jwt:Key') não foi configurada.");
 
-            // Configuração de autenticação JWT
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+           builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                        ValidAudience = builder.Configuration["Jwt:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
-                    };
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+                };
+            });
+
+
+            // CORS (caso precise rodar o front-end em localhost)
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
                 });
+            });
 
-            // Adicionando controladores
             builder.Services.AddControllers();
-
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-
-            // Constrói o app
             var app = builder.Build();
 
-            // Configuração do pipeline de requisições
             if (app.Environment.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI();
-                
             }
 
             app.UseHttpsRedirection();
-            app.UseAuthentication();  // Habilita a autenticação JWT
-            app.UseAuthorization();
+
+            app.UseCors("AllowAll");         // Habilita CORS
+            app.UseAuthentication();         // Habilita autenticação JWT
+            app.UseAuthorization();          // Habilita controle de acesso
 
             app.MapControllers();
 

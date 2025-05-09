@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\yatag\\Área de Trabalho\\Faculdade\\7 °Periodo\\J.A\\API\\API_J.A\\ControleAcessoApi\\ControleAcessoApi.csproj": {}
+    "C:\\Users\\Yataghan\\Desktop\\Faculdade\\J.A\\API Knapp\\ControleAcessoApi\\ControleAcessoApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\yatag\\Área de Trabalho\\Faculdade\\7 °Periodo\\J.A\\API\\API_J.A\\ControleAcessoApi\\ControleAcessoApi.csproj": {
+    "C:\\Users\\Yataghan\\Desktop\\Faculdade\\J.A\\API Knapp\\ControleAcessoApi\\ControleAcessoApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\yatag\\Área de Trabalho\\Faculdade\\7 °Periodo\\J.A\\API\\API_J.A\\ControleAcessoApi\\ControleAcessoApi.csproj",
+        "projectUniqueName": "C:\\Users\\Yataghan\\Desktop\\Faculdade\\J.A\\API Knapp\\ControleAcessoApi\\ControleAcessoApi.csproj",
         "projectName": "ControleAcessoApi",
-        "projectPath": "C:\\Users\\yatag\\Área de Trabalho\\Faculdade\\7 °Periodo\\J.A\\API\\API_J.A\\ControleAcessoApi\\ControleAcessoApi.csproj",
-        "packagesPath": "C:\\Users\\yatag\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\yatag\\Área de Trabalho\\Faculdade\\7 °Periodo\\J.A\\API\\API_J.A\\ControleAcessoApi\\obj\\",
+        "projectPath": "C:\\Users\\Yataghan\\Desktop\\Faculdade\\J.A\\API Knapp\\ControleAcessoApi\\ControleAcessoApi.csproj",
+        "packagesPath": "C:\\Users\\Yataghan\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Yataghan\\Desktop\\Faculdade\\J.A\\API Knapp\\ControleAcessoApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\yatag\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Yataghan\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
