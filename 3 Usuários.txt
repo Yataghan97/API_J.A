@@ -1,0 +1,9 @@
+3 Usuários
+Usaior adm - Adciona funções ao usuário como aprovações e consiga ver tudo dos outros usuários 
+Usuário aprovador - função de aprovar um ou mais usuários e tem acesso a tudo que o usuário padrão tem acesso
+Usario Padrão
+
+Aprovador so pod aprovar quem usa o mesmo domínio, mesma empresa
+O adm pode baixar todos os usuários do banco em json com cada usuário dizendo qual foi o aprovador que aprovou ele 
+
+Endpoints adm funcionando 
