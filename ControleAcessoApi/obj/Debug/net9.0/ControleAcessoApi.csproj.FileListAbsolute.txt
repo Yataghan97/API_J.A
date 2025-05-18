@@ -334,3 +334,5 @@ C:\Users\yatag\Área de Trabalho\Faculdade\7 °Periodo\J.A\API\API_J.A\ControleA
 C:\Users\Yataghan\Desktop\Faculdade\J.A\API Knapp\ControleAcessoApi\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
 C:\Users\Yataghan\Desktop\Faculdade\J.A\API Knapp\ControleAcessoApi\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\Users\Yataghan\Desktop\Faculdade\J.A\API Knapp\ControleAcessoApi\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Yataghan\Desktop\Faculdade\J.A\API Knapp\ControleAcessoApi\bin\Debug\net9.0\System.Formats.Asn1.dll
+C:\Users\Yataghan\Desktop\Faculdade\J.A\API Knapp\ControleAcessoApi\bin\Debug\net9.0\System.Text.Json.dll

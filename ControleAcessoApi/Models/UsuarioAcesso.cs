@@ -5,7 +5,7 @@ namespace ControleAcessoApi.Models
         public int UsuarioId { get; set; }
         public int AcessoId { get; set; }
 
-        public Usuario Usuario { get; set; }
-        public Acesso Acesso { get; set; }
+        public required Usuario? Usuario { get; set; }
+        public required Acesso? Acesso { get; set; }
     }
 }

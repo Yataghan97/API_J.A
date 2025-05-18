@@ -7,19 +7,23 @@ namespace ControleAcessoApi.Models
     {
         public int Id { get; set; }
 
-        [Required]
-        public string Nome { get; set; }
+        public bool IsAprovado { get; set; } = false;
+
+        public int? AprovadorId { get; set; }  // FK para usuário que aprovou
 
         [Required]
-        public string Email { get; set; }
+        public string Nome { get; set; } = string.Empty;
 
         [Required]
-        public string Senha { get; set; }
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        public string Senha { get; set; } = string.Empty;
 
         public int Idade { get; set; }
 
         [Required]
-        public string Role { get; set; } // "Admin", "Aprovador", "Padrao"
+        public string Role { get; set; } = "Padrao"; // "Admin", "Aprovador", "Padrao"
 
         public ICollection<UsuarioAcesso> UsuarioAcessos { get; set; } = new List<UsuarioAcesso>();
     }
