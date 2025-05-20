@@ -316,12 +316,6 @@ C:\Users\yatag\Área de Trabalho\Faculdade\7 °Periodo\J.A\API\API_J.A\ControleA
 C:\Users\yatag\Área de Trabalho\Faculdade\7 °Periodo\J.A\API\API_J.A\ControleAcessoApi\obj\Debug\net9.0\staticwebassets.build.json
 C:\Users\yatag\Área de Trabalho\Faculdade\7 °Periodo\J.A\API\API_J.A\ControleAcessoApi\obj\Debug\net9.0\staticwebassets.development.json
 C:\Users\yatag\Área de Trabalho\Faculdade\7 °Periodo\J.A\API\API_J.A\ControleAcessoApi\obj\Debug\net9.0\staticwebassets.build.endpoints.json
-C:\Users\yatag\Área de Trabalho\Faculdade\7 °Periodo\J.A\API\API_J.A\ControleAcessoApi\obj\Debug\net9.0\staticwebassets\msbuild.ControleAcessoApi.Microsoft.AspNetCore.StaticWebAssets.props
-C:\Users\yatag\Área de Trabalho\Faculdade\7 °Periodo\J.A\API\API_J.A\ControleAcessoApi\obj\Debug\net9.0\staticwebassets\msbuild.ControleAcessoApi.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
-C:\Users\yatag\Área de Trabalho\Faculdade\7 °Periodo\J.A\API\API_J.A\ControleAcessoApi\obj\Debug\net9.0\staticwebassets\msbuild.build.ControleAcessoApi.props
-C:\Users\yatag\Área de Trabalho\Faculdade\7 °Periodo\J.A\API\API_J.A\ControleAcessoApi\obj\Debug\net9.0\staticwebassets\msbuild.buildMultiTargeting.ControleAcessoApi.props
-C:\Users\yatag\Área de Trabalho\Faculdade\7 °Periodo\J.A\API\API_J.A\ControleAcessoApi\obj\Debug\net9.0\staticwebassets\msbuild.buildTransitive.ControleAcessoApi.props
-C:\Users\yatag\Área de Trabalho\Faculdade\7 °Periodo\J.A\API\API_J.A\ControleAcessoApi\obj\Debug\net9.0\staticwebassets.pack.json
 C:\Users\yatag\Área de Trabalho\Faculdade\7 °Periodo\J.A\API\API_J.A\ControleAcessoApi\obj\Debug\net9.0\Controle.79BA1F68.Up2Date
 C:\Users\yatag\Área de Trabalho\Faculdade\7 °Periodo\J.A\API\API_J.A\ControleAcessoApi\obj\Debug\net9.0\ControleAcessoApi.dll
 C:\Users\yatag\Área de Trabalho\Faculdade\7 °Periodo\J.A\API\API_J.A\ControleAcessoApi\obj\Debug\net9.0\refint\ControleAcessoApi.dll
@@ -336,3 +330,4 @@ C:\Users\Yataghan\Desktop\Faculdade\J.A\API Knapp\ControleAcessoApi\bin\Debug\ne
 C:\Users\Yataghan\Desktop\Faculdade\J.A\API Knapp\ControleAcessoApi\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 C:\Users\Yataghan\Desktop\Faculdade\J.A\API Knapp\ControleAcessoApi\bin\Debug\net9.0\System.Formats.Asn1.dll
 C:\Users\Yataghan\Desktop\Faculdade\J.A\API Knapp\ControleAcessoApi\bin\Debug\net9.0\System.Text.Json.dll
+C:\Users\yatag\Área de Trabalho\Faculdade\7 °Periodo\J.A\API\API_J.A\ControleAcessoApi\obj\Debug\net9.0\staticwebassets.build.json.cache
