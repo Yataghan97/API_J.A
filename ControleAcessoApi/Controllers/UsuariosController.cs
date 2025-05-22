@@ -19,6 +19,8 @@ namespace ControleAcessoApi.Controllers
             _context = context;
         }
 
+        
+
         // POST - Usuário padrão cria seu cadastro (não aprova na criação)
         [HttpPost]
         //[Authorize(Roles = "Admin")] // Comentei para liberar criação para usuários padrão
