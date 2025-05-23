@@ -30,12 +30,14 @@ namespace ControleAcessoApi.Controllers
                 return Unauthorized("Email ou senha inválidos.");
             }
 
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Name, usuario.Email),
-                new Claim(ClaimTypes.Role, usuario.Role),
-                new Claim("UsuarioId", usuario.Id.ToString())
-            };
+          var claims = new[]
+{
+    new Claim(ClaimTypes.Name, usuario.Email),
+    new Claim(ClaimTypes.Email, usuario.Email),
+    new Claim(ClaimTypes.Role, usuario.Role),
+    new Claim("UsuarioId", usuario.Id.ToString())
+};
+
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

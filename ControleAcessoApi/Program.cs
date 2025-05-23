@@ -3,6 +3,7 @@ using ControleAcessoApi.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Security.Claims;
 
 namespace ControleAcessoApi
 {
@@ -16,11 +17,11 @@ namespace ControleAcessoApi
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            // JWT Key
+            // JWT Key e Configurações
             var jwtKey = builder.Configuration["Jwt:Key"]
                 ?? throw new InvalidOperationException("A chave JWT ('Jwt:Key') não foi configurada.");
 
-           builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -30,17 +31,21 @@ namespace ControleAcessoApi
                     ValidateLifetime = true,
                     ValidIssuer = builder.Configuration["Jwt:Issuer"],
                     ValidAudience = builder.Configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+
+                    RoleClaimType = ClaimTypes.Role,
+                    NameClaimType = ClaimTypes.Name,
+
+                    ClockSkew = TimeSpan.FromMinutes(5)  // margem para diferença de horário
                 };
             });
 
-
-            // CORS (caso precise rodar o front-end em localhost)
+            // CORS (para front-end localhost)
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", policy =>
                 {
-                     policy.WithOrigins("http://localhost:5173")
+                    policy.WithOrigins("http://localhost:5173")
                           .AllowAnyHeader()
                           .AllowAnyMethod();
                 });
@@ -60,11 +65,29 @@ namespace ControleAcessoApi
 
             app.UseHttpsRedirection();
 
-            app.UseCors("AllowAll");         // Habilita CORS
-            app.UseAuthentication();         // Habilita autenticação JWT
-            app.UseAuthorization();          // Habilita controle de acesso
+            app.UseCors("AllowAll");
+
+            app.UseAuthentication();
+
+            // Middleware para DEBUG - mostrar claims no console
+            app.Use(async (context, next) =>
+            {
+                if (context.User.Identity?.IsAuthenticated == true)
+                {
+                    Console.WriteLine("Usuário autenticado com claims:");
+                    foreach (var claim in context.User.Claims)
+                    {
+                        Console.WriteLine($"{claim.Type}: {claim.Value}");
+                    }
+                }
+                await next();
+            });
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllers();
+
 
             app.Run();
         }

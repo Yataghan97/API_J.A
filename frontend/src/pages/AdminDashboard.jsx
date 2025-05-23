@@ -34,7 +34,7 @@ export default function AdminDashboard() {
 
   const aprovarUsuario = async (id) => {
     try {
-      await api.put(`/usuarios/${id}/aprovar`);
+      await api.put(`/usuarios/{id}/aprovar`);
       alert("Usuário aprovado com sucesso!");
       carregarUsuarios(); // Recarrega a lista após aprovação
     } catch (error) {

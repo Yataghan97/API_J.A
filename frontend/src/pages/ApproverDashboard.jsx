@@ -1,41 +1,75 @@
-import React, { useEffect, useState } from 'react';
-import api from '../services/api';
+// src/pages/ApproverDashboard.jsx
+import { useEffect, useState } from 'react';
+import Navbar from '../components/Navbar';
+import { getUsuariosPendentes, aprovarUsuario } from '../services/usuarioService';
 
-function ApproverDashboard() {
-  const [usuarios, setUsuarios] = useState([]);
+export default function ApproverDashboard() {
+  const [usuariosPendentes, setUsuariosPendentes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // Função para carregar usuários pendentes
+  const carregarUsuariosPendentes = async () => {
+    try {
+      setLoading(true);
+      const data = await getUsuariosPendentes();
+      setUsuariosPendentes(data);
+    } catch (error) {
+      console.error(error);
+      alert('Erro ao buscar usuários pendentes.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Ao montar o componente, carrega os usuários pendentes
   useEffect(() => {
-    api.get('/usuarios')
-      .then(res => setUsuarios(res.data))
-      .catch(err => console.error(err));
+    carregarUsuariosPendentes();
   }, []);
 
-  const aprovarUsuario = async (id) => {
+  // Função para aprovar usuário
+  const aprovar = async (id) => {
     try {
-      await api.put(`/usuarios/${id}/aprovar`);
-      setUsuarios(prev => prev.map(u => u.id === id ? { ...u, isAprovado: true } : u));
-    } catch (err) {
+      await aprovarUsuario(id);
+      setUsuariosPendentes(prev => prev.filter(user => user.id !== id));
+      alert('Usuário aprovado com sucesso!');
+    } catch (error) {
+      console.error(error);
       alert('Erro ao aprovar usuário.');
     }
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Painel do Aprovador</h1>
-      <ul>
-        {usuarios.filter(u => !u.isAprovado).map(user => (
-          <li key={user.id} className="border p-2 my-2 rounded bg-white flex justify-between items-center">
-            <div>
-              <strong>{user.nome}</strong> - {user.email}
-            </div>
-            <button onClick={() => aprovarUsuario(user.id)} className="bg-blue-600 text-white px-3 py-1 rounded">
-              Aprovar
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <>
+      <Navbar />
+      <div className="p-4 max-w-4xl mx-auto">
+        <h2 className="text-3xl font-bold mb-6">Painel do Aprovador</h2>
+
+        {loading ? (
+          <p>Carregando usuários pendentes...</p>
+        ) : usuariosPendentes.length === 0 ? (
+          <p className="text-gray-600">Nenhum usuário pendente.</p>
+        ) : (
+          <ul className="space-y-4">
+            {usuariosPendentes.map(user => (
+              <li
+                key={user.id}
+                className="flex justify-between items-center bg-white p-4 rounded shadow"
+              >
+                <div>
+                  <p className="font-semibold">{user.nome}</p>
+                  <p className="text-sm text-gray-500">{user.email}</p>
+                </div>
+                <button
+                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                  onClick={() => aprovar(user.id)}
+                >
+                  Aprovar
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </>
   );
 }
-
-export default ApproverDashboard;

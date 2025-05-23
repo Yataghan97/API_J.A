@@ -19,8 +19,13 @@ namespace ControleAcessoApi.Controllers
             _context = context;
         }
 
-        
-
+        [HttpGet("me/claims")]
+        [Authorize]
+        public IActionResult GetMeClaims()
+        {
+            var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
+            return Ok(claims);
+        }
         // POST - Usuário padrão cria seu cadastro (não aprova na criação)
         [HttpPost]
         //[Authorize(Roles = "Admin")] // Comentei para liberar criação para usuários padrão
@@ -62,7 +67,7 @@ namespace ControleAcessoApi.Controllers
         }
 
         // GET usuario por id (para aprovar ou ver detalhes) — acessível por Admin e Aprovador
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         [Authorize(Roles = "Admin,Aprovador")]
         public IActionResult GetUsuario(int id)
         {
@@ -92,39 +97,38 @@ namespace ControleAcessoApi.Controllers
             });
         }
 
-        // PUT - Aprovar usuário (somente aprovador pode aprovar usuários do mesmo domínio)
+        // PUT - Aprovar usuário (Admin e Aprovador só podem aprovar usuários do mesmo domínio)
         [HttpPut("{id}/aprovar")]
-        [Authorize(Roles = "Aprovador")]
+        [Authorize(Roles = "Aprovador,Admin")]
         public IActionResult AprovarUsuario(int id)
         {
             var usuario = _context.Usuarios.Find(id);
             if (usuario == null)
                 return NotFound();
 
-            // Pega o email do aprovador (usuário logado) via claims (melhor forma)
-            var aprovadorEmail = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            // Pega o email do usuário logado via claims
+            var emailLogado = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
 
-            if (string.IsNullOrEmpty(aprovadorEmail))
-                return Unauthorized("Email do aprovador não encontrado no token.");
+            if (string.IsNullOrEmpty(emailLogado))
+                return Unauthorized("Email do usuário logado não encontrado.");
 
-            var aprovador = _context.Usuarios.FirstOrDefault(u => u.Email == aprovadorEmail);
-            if (aprovador == null)
+            var usuarioLogado = _context.Usuarios.FirstOrDefault(u => u.Email == emailLogado);
+            if (usuarioLogado == null)
                 return Unauthorized();
 
-            // Verifica se o domínio do email do aprovador e do usuário são iguais
+            // Verifica se o domínio do email do aprovador/admin e do usuário são iguais
             var dominioUsuario = usuario.Email!.Split('@').Last().ToLower();
-            var dominioAprovador = aprovador.Email!.Split('@').Last().ToLower();
+            var dominioLogado = usuarioLogado.Email!.Split('@').Last().ToLower();
 
-            if (dominioUsuario != dominioAprovador)
+            if (dominioUsuario != dominioLogado)
             {
                 return Forbid("Você só pode aprovar usuários do mesmo domínio da sua empresa.");
             }
 
             usuario.IsAprovado = true;
-            usuario.AprovadorId = aprovador.Id;
+            usuario.AprovadorId = usuarioLogado.Id;
             _context.SaveChanges();
 
-            // Retorna dados do usuário aprovado (sem senha)
             return Ok(new
             {
                 usuario.Id,
@@ -138,7 +142,7 @@ namespace ControleAcessoApi.Controllers
         }
 
         // DELETE - apenas Admin pode excluir usuário
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         [Authorize(Roles = "Admin")]
         public IActionResult DeleteUsuario(int id)
         {
