@@ -1,13 +1,16 @@
 // src/pages/ApproverDashboard.jsx
 import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
-import { getUsuariosPendentes, aprovarUsuario } from '../services/usuarioService';
+import {
+  getUsuariosPendentes,
+  aprovarUsuario,
+  getUsuarioById,
+} from '../services/usuarioService';
 
 export default function ApproverDashboard() {
   const [usuariosPendentes, setUsuariosPendentes] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Função para carregar usuários pendentes
   const carregarUsuariosPendentes = async () => {
     try {
       setLoading(true);
@@ -21,12 +24,10 @@ export default function ApproverDashboard() {
     }
   };
 
-  // Ao montar o componente, carrega os usuários pendentes
   useEffect(() => {
     carregarUsuariosPendentes();
   }, []);
 
-  // Função para aprovar usuário
   const aprovar = async (id) => {
     try {
       await aprovarUsuario(id);
@@ -34,7 +35,7 @@ export default function ApproverDashboard() {
       alert('Usuário aprovado com sucesso!');
     } catch (error) {
       console.error(error);
-      alert('Erro ao aprovar usuário.');
+      alert('Erro ao aprovar usuário. Verifique se você tem permissão.');
     }
   };
 

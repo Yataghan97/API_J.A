@@ -51,6 +51,14 @@ namespace API_Knapp.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task<List<Usuario>> GetUsuariosPendentesPorDominioAsync(string dominio)
+        {
+            return await _context.Usuarios
+                .Where(u => !u.IsAprovado && u.Email.EndsWith("@" + dominio))
+                .ToListAsync();
+        }
+
+
         // Deleta um usuário pelo ID
         public async Task DeleteUsuarioAsync(int id)
         {
@@ -64,5 +72,7 @@ namespace API_Knapp.Services
             _context.Usuarios.Remove(usuario);
             await _context.SaveChangesAsync();
         }
+
+        
     }
 }

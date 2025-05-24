@@ -97,6 +97,30 @@ namespace ControleAcessoApi.Controllers
             });
         }
 
+        [HttpGet("pendentes")]
+        [Authorize(Roles = "Admin,Aprovador")]
+        public IActionResult GetUsuariosPendentes()
+        {
+            var emailLogado = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            if (string.IsNullOrEmpty(emailLogado))
+                return Unauthorized();
+
+            var dominioLogado = emailLogado.Split('@').Last().ToLower();
+
+            var pendentes = _context.Usuarios
+                .Where(u => !u.IsAprovado && u.Email.EndsWith("@" + dominioLogado))
+                .Select(u => new
+                {
+                    u.Id,
+                    u.Nome,
+                    u.Email
+                })
+                .ToList();
+
+            return Ok(pendentes);
+        }
+
+
         // PUT - Aprovar usuário (Admin e Aprovador só podem aprovar usuários do mesmo domínio)
         [HttpPut("{id}/aprovar")]
         [Authorize(Roles = "Aprovador,Admin")]
