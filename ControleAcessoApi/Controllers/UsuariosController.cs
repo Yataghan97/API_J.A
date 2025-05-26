@@ -196,5 +196,39 @@ namespace ControleAcessoApi.Controllers
             return Ok("Todos os usuários foram deletados.");
         }
 
+        [HttpGet("me")]
+        [Authorize]
+        public IActionResult GetMeuPerfil()
+        {
+            var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            if (string.IsNullOrEmpty(email))
+                return Unauthorized();
+
+            var usuario = _context.Usuarios
+                .Include(u => u.UsuarioAcessos)
+                .ThenInclude(ua => ua.Acesso)
+                .FirstOrDefault(u => u.Email == email);
+
+            if (usuario == null)
+                return NotFound();
+
+            return Ok(new
+            {
+                usuario.Id,
+                usuario.Nome,
+                usuario.Email,
+                usuario.Idade,
+                usuario.Role,
+                usuario.IsAprovado,
+                usuario.AprovadorId,
+                UsuarioAcessos = usuario.UsuarioAcessos.Select(ua => new
+                {
+                    ua.Acesso!.AcessoId,
+                    ua.Acesso.Nome
+                })
+            });
+        }
+
+
     }
 }

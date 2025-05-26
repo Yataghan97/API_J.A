@@ -3,16 +3,28 @@ import api from '../services/api';
 
 function UserDashboard() {
   const [usuario, setUsuario] = useState(null);
+  const [erro, setErro] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const userId = payload.UsuarioId;
+    if (!token) {
+      setErro('Usuário não autenticado. Faça login.');
+      return;
+    }
 
-    api.get(`/usuarios/${userId}`)
-      .then(res => setUsuario(res.data))
-      .catch(err => console.error(err));
+    api.get('/usuarios/me')
+      .then(res => {
+        setUsuario(res.data);
+      })
+      .catch(err => {
+        console.error('Erro ao buscar usuário:', err);
+        setErro('Erro ao buscar usuário. Veja o console.');
+      });
   }, []);
+
+  if (erro) {
+    return <div className="p-4 text-red-600">{erro}</div>;
+  }
 
   return (
     <div className="p-4">

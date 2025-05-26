@@ -1,0 +1,76 @@
+# .NET (C#)
+bin/
+obj/
+*.user
+*.suo
+*.pdb
+*.dll
+*.exe
+*.cache
+*.log
+*.vspscc
+*.vssscc
+*.dbmdl
+*.dbproj.schemaview
+*.sln.docstates
+*.ncb
+*.aps
+*.vsp
+*.vs/
+*.sdf
+*.ipch
+*.opensdf
+*.tlog
+*.log
+*.cache
+*.ide
+
+# ASP.NET Core
+appsettings.Development.json
+appsettings.Production.json
+appsettings.*.json
+*.swp
+*.swo
+
+# Rider
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# React / Node.js
+frontend/node_modules/
+frontend/dist/
+frontend/.next/
+frontend/build/
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+frontend/.env.development
+frontend/.eslintcache
+frontend/yarn.lock
+frontend/package-lock.json
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+*.orig
+*.rej
+
+# Backup
+*~
+*.bak
+*.tmp
+
+# Test Coverage
+coverage/
+.nyc
