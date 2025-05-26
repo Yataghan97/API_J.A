@@ -13,19 +13,48 @@ export default function RegisterPage() {
     try {
       await api.post('/usuarios', form);
       alert('Cadastro enviado para aprovação!');
-    } catch (error) {
+      // Limpar campos após cadastro
+      setForm({ nome: '', email: '', senha: '' });
+    } catch {
       alert('Erro ao cadastrar.');
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <form className="bg-white p-8 rounded shadow-md" onSubmit={handleRegister}>
-        <h2 className="text-xl mb-4">Cadastro</h2>
-        <input name="nome" placeholder="Nome" className="w-full mb-2 p-2 border" onChange={handleChange} />
-        <input name="email" placeholder="Email" className="w-full mb-2 p-2 border" onChange={handleChange} />
-        <input name="senha" placeholder="Senha" type="password" className="w-full mb-4 p-2 border" onChange={handleChange} />
-        <button className="bg-green-600 text-white w-full p-2 rounded">Cadastrar</button>
+    <div className="min-h-screen">
+      <form
+        className="bg-white shadow-md rounded p-6 max-w-sm w-full"
+        onSubmit={handleRegister}
+        autoComplete="off" // Desativa preenchimento automático
+      >
+        <h2 className="text-xl">Cadastro</h2>
+        <input
+          name="nome"
+          placeholder="Nome"
+          className="input"
+          onChange={handleChange}
+          value={form.nome}
+          autoComplete="off"
+        />
+        <input
+          name="email"
+          placeholder="Email"
+          className="input"
+          onChange={handleChange}
+          value={form.email}
+          type="email"
+          autoComplete="off"
+        />
+        <input
+          name="senha"
+          placeholder="Senha"
+          type="password"
+          className="input"
+          onChange={handleChange}
+          value={form.senha}
+          autoComplete="new-password"
+        />
+        <button type="submit" className="btn bg-blue-600">Cadastrar</button>
       </form>
     </div>
   );

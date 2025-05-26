@@ -1,0 +1,116 @@
+/* Fundo e estrutura geral */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to bottom right, #f2f2f2, #ffffff);
+}
+
+/* Container principal do Admin */
+.admin-main {
+  max-width: 900px;
+  margin: 4rem auto;
+  background-color: #ffffff;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Título do Admin */
+.admin-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  text-align: center;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+/* Botões gerais */
+.btn {
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Botão Sair */
+.btn-logout {
+  align-self: flex-end;
+  background-color: #d32f2f;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.btn-logout:hover {
+  background-color: #b71c1c;
+}
+
+/* Botão Aprovar */
+.btn-approve {
+  background-color: #43a047;
+  color: white;
+  margin-top: 10px;
+}
+
+.btn-approve:hover {
+  background-color: #388e3c;
+}
+
+/* Botão Baixar JSON */
+.btn-download {
+  background-color: #1976d2;
+  color: white;
+  width: fit-content;
+  padding: 10px 20px;
+  margin-top: -10px;
+}
+
+.btn-download:hover {
+  background-color: #1565c0;
+}
+
+/* Seção com informações do administrador */
+.admin-info {
+  background-color: #fafafa;
+  border: 2px solid #e4e4e4;
+  border-radius: 12px;
+  padding: 20px;
+  color: #333;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.admin-info h3 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+/* Lista de usuários */
+.usuarios-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Cartão de usuário */
+.usuario-card {
+  background-color: #fafafa;
+  border: 2px solid #e4e4e4;
+  border-radius: 12px;
+  padding: 20px;
+  color: #333;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.usuario-card p {
+  margin: 0 0 8px;
+}

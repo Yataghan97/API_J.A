@@ -1,0 +1,80 @@
+/* Fundo e estrutura geral */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to bottom right, #f2f2f2, #ffffff);
+}
+
+/* Container principal da página do usuário */
+.usuario-container {
+  max-width: 600px;
+  margin: 4rem auto;
+  background-color: #ffffff;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Cabeçalho */
+.usuario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Título */
+.usuario-titulo {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+/* Botão de sair */
+.botao-sair {
+  background-color: #d32f2f;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.botao-sair:hover {
+  background-color: #d32f2f;
+}
+
+/* Cartão de informações do usuário */
+.usuario-cartao {
+  background-color: #fafafa;
+  border: 2px solid #e4e4e4;
+  border-radius: 12px;
+  padding: 20px;
+  color: #333;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.usuario-cartao p {
+  margin: 0 0 10px;
+}
+
+.usuario-cartao strong {
+  color: #111;
+}
+
+/* Mensagens de estado */
+.loading,
+.erro {
+  text-align: center;
+  font-size: 1rem;
+  color: #cc0000;
+  margin-top: 2rem;
+}

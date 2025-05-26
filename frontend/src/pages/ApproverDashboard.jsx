@@ -1,76 +1,102 @@
-// src/pages/ApproverDashboard.jsx
-import { useEffect, useState } from 'react';
-import Navbar from '../components/Navbar';
-import {
-  getUsuariosPendentes,
-  aprovarUsuario,
-  getUsuarioById,
-} from '../services/usuarioService';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
+import '../pages_css/aprover.css'
 
-export default function ApproverDashboard() {
-  const [usuariosPendentes, setUsuariosPendentes] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function AprovadorDashboard() {
+  const navigate = useNavigate();
 
-  const carregarUsuariosPendentes = async () => {
-    try {
-      setLoading(true);
-      const data = await getUsuariosPendentes();
-      setUsuariosPendentes(data);
-    } catch (error) {
-      console.error(error);
-      alert('Erro ao buscar usuários pendentes.');
-    } finally {
-      setLoading(false);
-    }
+  const [usuario, setUsuario] = useState(null);
+  const [pendentes, setPendentes] = useState([]);
+  const [erro, setErro] = useState(null);
+  const [loadingUsuario, setLoadingUsuario] = useState(true);
+  const [loadingPendentes, setLoadingPendentes] = useState(true);
+
+  const sair = () => {
+    localStorage.removeItem('token');
+    navigate('/');
   };
 
   useEffect(() => {
-    carregarUsuariosPendentes();
+    api.get('/usuarios/me')
+      .then(res => {
+        setUsuario(res.data);
+        setLoadingUsuario(false);
+      })
+      .catch(err => {
+        setErro('Erro ao buscar informações do usuário.');
+        setLoadingUsuario(false);
+      });
   }, []);
 
-  const aprovar = async (id) => {
+  useEffect(() => {
+    api.get('/usuarios/pendentes')
+      .then(res => {
+        setPendentes(res.data);
+        setLoadingPendentes(false);
+      })
+      .catch(err => {
+        setErro('Erro ao carregar usuários pendentes.');
+        setLoadingPendentes(false);
+      });
+  }, []);
+
+  const aprovarUsuario = async (id) => {
     try {
-      await aprovarUsuario(id);
-      setUsuariosPendentes(prev => prev.filter(user => user.id !== id));
+      await api.put(`/usuarios/${id}/aprovar`);
       alert('Usuário aprovado com sucesso!');
-    } catch (error) {
-      console.error(error);
-      alert('Erro ao aprovar usuário. Verifique se você tem permissão.');
+      const res = await api.get('/usuarios/pendentes');
+      setPendentes(res.data);
+    } catch {
+      alert('Erro ao aprovar usuário.');
     }
   };
 
-  return (
-    <>
-      <Navbar />
-      <div className="p-4 max-w-4xl mx-auto">
-        <h2 className="text-3xl font-bold mb-6">Painel do Aprovador</h2>
+  if (erro) {
+    return <div className="error">{erro}</div>;
+  }
 
-        {loading ? (
-          <p>Carregando usuários pendentes...</p>
-        ) : usuariosPendentes.length === 0 ? (
-          <p className="text-gray-600">Nenhum usuário pendente.</p>
+  return (
+    <div className="container">
+      <button onClick={sair} className="btn btn-logout">Sair</button>
+
+      <h1 className="title">Painel do Aprovador</h1>
+
+      <section className="user-info">
+        <h2 className="subtitle">Seus Dados</h2>
+        {loadingUsuario ? (
+          <p>Carregando informações do usuário...</p>
+        ) : usuario ? (
+          <div className="card">
+            <p><strong>Nome:</strong> {usuario.nome}</p>
+            <p><strong>Email:</strong> {usuario.email}</p>
+            <p><strong>Idade:</strong> {usuario.idade}</p>
+            <p><strong>Aprovado:</strong> {usuario.isAprovado ? 'Sim' : 'Não'}</p>
+            <p><strong>Cargo:</strong> {usuario.role}</p>
+          </div>
         ) : (
-          <ul className="space-y-4">
-            {usuariosPendentes.map(user => (
-              <li
-                key={user.id}
-                className="flex justify-between items-center bg-white p-4 rounded shadow"
-              >
-                <div>
-                  <p className="font-semibold">{user.nome}</p>
-                  <p className="text-sm text-gray-500">{user.email}</p>
-                </div>
-                <button
-                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-                  onClick={() => aprovar(user.id)}
-                >
-                  Aprovar
-                </button>
-              </li>
-            ))}
-          </ul>
+          <p>Usuário não encontrado.</p>
         )}
-      </div>
-    </>
+      </section>
+
+      <section className="pending-users">
+        <h2 className="subtitle">Usuários Pendentes para Aprovação</h2>
+        {loadingPendentes ? (
+          <p>Carregando usuários pendentes...</p>
+        ) : pendentes.length > 0 ? (
+          pendentes.map(user => (
+            <div key={user.id} className="card user-pending">
+              <p><strong>Nome:</strong> {user.nome}</p>
+              <p><strong>Email:</strong> {user.email}</p>
+              <button onClick={() => aprovarUsuario(user.id)} className="btn btn-approve">
+                Aprovar
+              </button>
+            </div>
+          ))
+        ) : (
+          <p>Não há usuários pendentes.</p>
+        )}
+      </section>
+    </div>
   );
 }
