@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Yataghan\\Desktop\\Faculdade\\J.A\\API_kapp\\API_J.A\\ControleAcessoApi\\ControleAcessoApi.csproj": {}
+    "C:\\Users\\yatag\\Área de Trabalho\\Faculdade\\7 °Periodo\\J.A\\API\\API_J.A\\ControleAcessoApi\\ControleAcessoApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Yataghan\\Desktop\\Faculdade\\J.A\\API_kapp\\API_J.A\\ControleAcessoApi\\ControleAcessoApi.csproj": {
+    "C:\\Users\\yatag\\Área de Trabalho\\Faculdade\\7 °Periodo\\J.A\\API\\API_J.A\\ControleAcessoApi\\ControleAcessoApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Yataghan\\Desktop\\Faculdade\\J.A\\API_kapp\\API_J.A\\ControleAcessoApi\\ControleAcessoApi.csproj",
+        "projectUniqueName": "C:\\Users\\yatag\\Área de Trabalho\\Faculdade\\7 °Periodo\\J.A\\API\\API_J.A\\ControleAcessoApi\\ControleAcessoApi.csproj",
         "projectName": "ControleAcessoApi",
-        "projectPath": "C:\\Users\\Yataghan\\Desktop\\Faculdade\\J.A\\API_kapp\\API_J.A\\ControleAcessoApi\\ControleAcessoApi.csproj",
-        "packagesPath": "C:\\Users\\Yataghan\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Yataghan\\Desktop\\Faculdade\\J.A\\API_kapp\\API_J.A\\ControleAcessoApi\\obj\\",
+        "projectPath": "C:\\Users\\yatag\\Área de Trabalho\\Faculdade\\7 °Periodo\\J.A\\API\\API_J.A\\ControleAcessoApi\\ControleAcessoApi.csproj",
+        "packagesPath": "C:\\Users\\yatag\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\yatag\\Área de Trabalho\\Faculdade\\7 °Periodo\\J.A\\API\\API_J.A\\ControleAcessoApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Yataghan\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\yatag\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -38,7 +38,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.200"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0": {
@@ -90,7 +90,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

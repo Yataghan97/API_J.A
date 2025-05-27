@@ -24,7 +24,11 @@ function LoginPage() {
       else if (role === 'Aprovador') navigate('/approver');
       else navigate('/user');
     } catch (err) {
-      setErro('Email ou senha inválidos.');
+      if (err.response && err.response.status === 401) {
+        setErro(err.response.data); // Mensagem personalizada da API
+      } else {
+        setErro('Erro ao tentar fazer login. Tente novamente mais tarde.');
+      }
     }
   };
 
@@ -65,12 +69,14 @@ function LoginPage() {
           ref={senhaRef}
         />
         {erro && <p className="text-red-500 text-sm mb-2">{erro}</p>}
+
         <button
           onClick={handleLogin}
           className="btn w-full bg-blue-600 text-white mb-2"
         >
           Entrar
         </button>
+
         <button
           onClick={handleCriarConta}
           className="btn w-full bg-gray-300 text-black"

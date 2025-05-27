@@ -24,20 +24,35 @@ namespace ControleAcessoApi.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginDTO loginDto)
         {
-            var usuario = _context.Usuarios.FirstOrDefault(u => u.Email == loginDto.Email && u.Senha == loginDto.Senha);
+            // Etapa 1: Buscar apenas pelo email
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Email == loginDto.Email);
+
+            // Verifica se o email existe
             if (usuario == null)
+            {
+                return Unauthorized("Usuário não está cadastrado.");
+            }
+
+            // Verifica se o usuário está aprovado
+            if (!usuario.IsAprovado)
+            {
+                return Unauthorized("Usuário ainda não aprovado. Aguarde aprovação.");
+            }
+
+            // Verifica se a senha está correta
+            if (usuario.Senha != loginDto.Senha)
             {
                 return Unauthorized("Email ou senha inválidos.");
             }
 
-          var claims = new[]
-{
-    new Claim(ClaimTypes.Name, usuario.Email),
-    new Claim(ClaimTypes.Email, usuario.Email),
-    new Claim(ClaimTypes.Role, usuario.Role),
-    new Claim("UsuarioId", usuario.Id.ToString())
-};
-
+            // Autenticação válida — gera o token
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, usuario.Email),
+                new Claim(ClaimTypes.Email, usuario.Email),
+                new Claim(ClaimTypes.Role, usuario.Role),
+                new Claim("UsuarioId", usuario.Id.ToString())
+            };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -52,5 +67,6 @@ namespace ControleAcessoApi.Controllers
 
             return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
         }
+
     }
 }

@@ -26,28 +26,21 @@ namespace ControleAcessoApi.Controllers
             var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
             return Ok(claims);
         }
-        // POST - Usuário padrão cria seu cadastro (não aprova na criação)
+
         [HttpPost]
-        //[Authorize(Roles = "Admin")] // Comentei para liberar criação para usuários padrão
         public IActionResult CreateUsuario([FromBody] Usuario usuario)
         {
-            // NÃO aprova automaticamente o usuário criado
-            // usuario.IsAprovado = true;
-
             _context.Usuarios.Add(usuario);
             _context.SaveChanges();
 
-            // Retorna o usuário criado (com senha — você pode querer limpar ou retornar DTO aqui)
             return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id }, usuario);
         }
 
-        // GET - Admin pode baixar todos usuários sem senha e com info do aprovador
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public IActionResult GetUsuarios()
         {
             var usuarios = _context.Usuarios
-                //.Where(u => u.IsAprovado) // Opcional: filtrar só aprovados
                 .Select(u => new
                 {
                     u.Id,
@@ -66,7 +59,6 @@ namespace ControleAcessoApi.Controllers
             return Ok(usuarios);
         }
 
-        // GET usuario por id (para aprovar ou ver detalhes) — acessível por Admin e Aprovador
         [HttpGet("{id:int}")]
         [Authorize(Roles = "Admin,Aprovador")]
         public IActionResult GetUsuario(int id)
@@ -79,7 +71,6 @@ namespace ControleAcessoApi.Controllers
             if (usuario == null)
                 return NotFound();
 
-            // Para segurança, não retornar senha diretamente:
             return Ok(new
             {
                 usuario.Id,
@@ -120,19 +111,15 @@ namespace ControleAcessoApi.Controllers
             return Ok(pendentes);
         }
 
-
-        // PUT - Aprovar usuário (Admin e Aprovador só podem aprovar usuários do mesmo domínio)
         [HttpPut("{id}/aprovar")]
-        [Authorize(Roles = "Aprovador,Admin")]
+        [Authorize(Roles = "Admin,Aprovador")]
         public IActionResult AprovarUsuario(int id)
         {
             var usuario = _context.Usuarios.Find(id);
             if (usuario == null)
                 return NotFound();
 
-            // Pega o email do usuário logado via claims
             var emailLogado = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-
             if (string.IsNullOrEmpty(emailLogado))
                 return Unauthorized("Email do usuário logado não encontrado.");
 
@@ -140,13 +127,12 @@ namespace ControleAcessoApi.Controllers
             if (usuarioLogado == null)
                 return Unauthorized();
 
-            // Verifica se o domínio do email do aprovador/admin e do usuário são iguais
             var dominioUsuario = usuario.Email!.Split('@').Last().ToLower();
             var dominioLogado = usuarioLogado.Email!.Split('@').Last().ToLower();
 
-            if (dominioUsuario != dominioLogado)
+            if (usuarioLogado.Role != "Admin" && dominioUsuario != dominioLogado)
             {
-                return Forbid("Você só pode aprovar usuários do mesmo domínio da sua empresa.");
+                return Forbid("Você só pode aprovar usuários do mesmo domínio.");
             }
 
             usuario.IsAprovado = true;
@@ -165,7 +151,6 @@ namespace ControleAcessoApi.Controllers
             });
         }
 
-        // DELETE - apenas Admin pode excluir usuário
         [HttpDelete("{id:int}")]
         [Authorize(Roles = "Admin")]
         public IActionResult DeleteUsuario(int id)
@@ -180,15 +165,13 @@ namespace ControleAcessoApi.Controllers
             return NoContent();
         }
 
-        // DELETE api/usuarios/limpar
         [HttpDelete("limpar")]
-        [Authorize(Roles = "Admin")]  // Somente Admin pode executar essa ação destrutiva
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteAllUsuarios()
         {
             var usuarios = _context.Usuarios.ToList();
-
             if (!usuarios.Any())
-                return NoContent(); // ou Ok("Nenhum usuário para deletar.");
+                return NoContent();
 
             _context.Usuarios.RemoveRange(usuarios);
             _context.SaveChanges();
@@ -212,6 +195,9 @@ namespace ControleAcessoApi.Controllers
             if (usuario == null)
                 return NotFound();
 
+            if (!usuario.IsAprovado)
+                return Forbid("Aguardando aprovação.");
+
             return Ok(new
             {
                 usuario.Id,
@@ -228,7 +214,5 @@ namespace ControleAcessoApi.Controllers
                 })
             });
         }
-
-
     }
 }

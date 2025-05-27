@@ -1,8 +1,17 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
 export default function RegisterPage() {
-  const [form, setForm] = useState({ nome: '', email: '', senha: '' });
+  const [form, setForm] = useState({
+    nome: '',
+    email: '',
+    senha: '',
+    confirmarSenha: '',
+    role: 'User', // valor padrão
+  });
+  const [erro, setErro] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -10,51 +19,99 @@ export default function RegisterPage() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    if (form.senha !== form.confirmarSenha) {
+      setErro('As senhas não coincidem.');
+      return;
+    }
+
     try {
-      await api.post('/usuarios', form);
+      const { nome, email, senha, role } = form;
+      await api.post('/usuarios', { nome, email, senha, role });
       alert('Cadastro enviado para aprovação!');
-      // Limpar campos após cadastro
-      setForm({ nome: '', email: '', senha: '' });
+      setForm({
+        nome: '',
+        email: '',
+        senha: '',
+        confirmarSenha: '',
+        role: 'User',
+      });
+      setErro('');
     } catch {
-      alert('Erro ao cadastrar.');
+      setErro('Erro ao cadastrar. Verifique os dados e tente novamente.');
     }
   };
 
+  const handleLogin = () => {
+    navigate('/');
+  };
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex justify-center items-center bg-gray-100 p-4">
       <form
         className="bg-white shadow-md rounded p-6 max-w-sm w-full"
         onSubmit={handleRegister}
-        autoComplete="off" // Desativa preenchimento automático
+        autoComplete="off"
       >
-        <h2 className="text-xl">Cadastro</h2>
+        <h2 className="text-xl mb-4">Cadastro</h2>
+
         <input
           name="nome"
           placeholder="Nome"
-          className="input"
+          className="input mb-2 w-full"
           onChange={handleChange}
           value={form.nome}
-          autoComplete="off"
         />
         <input
           name="email"
           placeholder="Email"
-          className="input"
+          className="input mb-2 w-full"
           onChange={handleChange}
           value={form.email}
           type="email"
-          autoComplete="off"
         />
         <input
           name="senha"
           placeholder="Senha"
           type="password"
-          className="input"
+          className="input mb-2 w-full"
           onChange={handleChange}
           value={form.senha}
           autoComplete="new-password"
         />
-        <button type="submit" className="btn bg-blue-600">Cadastrar</button>
+        <input
+          name="confirmarSenha"
+          placeholder="Confirmar Senha"
+          type="password"
+          className="input mb-2 w-full"
+          onChange={handleChange}
+          value={form.confirmarSenha}
+          autoComplete="new-password"
+        />
+
+        <select
+          name="role"
+          className="input mb-4 w-full"
+          onChange={handleChange}
+          value={form.role}
+        >
+          <option value="User">Usuário Padrão</option>
+          <option value="Aprovador">Aprovador</option>
+        </select>
+
+        {erro && <p className="text-red-500 text-sm mb-2">{erro}</p>}
+
+        <button type="submit" className="btn w-full bg-blue-600 text-white mb-2">
+          Cadastrar
+        </button>
+
+        <button
+          type="button"
+          onClick={handleLogin}
+          className="btn w-full bg-gray-300 text-black"
+        >
+          Voltar
+        </button>
       </form>
     </div>
   );
