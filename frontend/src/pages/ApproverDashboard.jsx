@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import '../pages_css/aprover.css'
+import '../pages_css/aprover.css';
 
 export default function AprovadorDashboard() {
   const navigate = useNavigate();
@@ -23,32 +23,59 @@ export default function AprovadorDashboard() {
         setUsuario(res.data);
         setLoadingUsuario(false);
       })
-      .catch(err => {
+      .catch(() => {
         setErro('Erro ao buscar informações do usuário.');
         setLoadingUsuario(false);
       });
   }, []);
 
   useEffect(() => {
-    api.get('/usuarios/pendentes')
-      .then(res => {
-        setPendentes(res.data);
-        setLoadingPendentes(false);
-      })
-      .catch(err => {
-        setErro('Erro ao carregar usuários pendentes.');
-        setLoadingPendentes(false);
-      });
+    carregarPendentes();
   }, []);
+
+  const carregarPendentes = async () => {
+    setLoadingPendentes(true);
+    try {
+      const res = await api.get('/usuarios/pendentes');
+      setPendentes(res.data);
+    } catch {
+      setErro('Erro ao carregar usuários pendentes.');
+    }
+    setLoadingPendentes(false);
+  };
 
   const aprovarUsuario = async (id) => {
     try {
       await api.put(`/usuarios/${id}/aprovar`);
       alert('Usuário aprovado com sucesso!');
-      const res = await api.get('/usuarios/pendentes');
-      setPendentes(res.data);
+      carregarPendentes();
     } catch {
       alert('Erro ao aprovar usuário.');
+    }
+  };
+
+  const negarUsuario = async (id) => {
+    try {
+      await api.put(`/usuarios/${id}/negar`);
+      alert('Usuário negado com sucesso!');
+      carregarPendentes();
+    } catch {
+      alert('Erro ao negar usuário.');
+    }
+  };
+
+  const downloadUsuariosMesmoDominio = async () => {
+    try {
+      const response = await api.get('/usuarios/usuarios_dominio');
+      const blob = new Blob([JSON.stringify(response.data, null, 2)], {
+        type: 'application/json',
+      });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'usuarios_mesmo_dominio.json';
+      link.click();
+    } catch {
+      alert("Erro ao baixar os usuários do mesmo domínio.");
     }
   };
 
@@ -78,6 +105,10 @@ export default function AprovadorDashboard() {
           <p>Usuário não encontrado.</p>
         )}
       </section>
+      
+      <button onClick={downloadUsuariosMesmoDominio} className="btn btn-download">
+        Baixar usuários do mesmo domínio
+      </button>
 
       <section className="pending-users">
         <h2 className="subtitle">Usuários Pendentes para Aprovação</h2>
@@ -85,12 +116,24 @@ export default function AprovadorDashboard() {
           <p>Carregando usuários pendentes...</p>
         ) : pendentes.length > 0 ? (
           pendentes.map(user => (
-            <div key={user.id} className="card user-pending">
+            <div key={user.id} className="usuario-card">
               <p><strong>Nome:</strong> {user.nome}</p>
               <p><strong>Email:</strong> {user.email}</p>
-              <button onClick={() => aprovarUsuario(user.id)} className="btn btn-approve">
-                Aprovar
-              </button>
+              {/* 'role' e 'isAprovado' não existem nessa lista */}
+              <div className="btn-group">
+                <button 
+                  onClick={() => aprovarUsuario(user.id)} 
+                  className="btn btn-approve btn-small"
+                >
+                  Aprovar
+                </button>
+                <button 
+                  onClick={() => negarUsuario(user.id)} 
+                  className="btn btn-deny btn-small"
+                >
+                  Negar
+                </button>
+              </div>
             </div>
           ))
         ) : (

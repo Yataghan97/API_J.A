@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import '../pages_css/admin.css'; // importa o CSS
+import '../pages_css/admin.css';
 
 export default function AdminDashboard() {
   const [admin, setAdmin] = useState(null);
   const [usuarios, setUsuarios] = useState([]);
+  const [dominios, setDominios] = useState([]);
+  const [dominioSelecionado, setDominioSelecionado] = useState('');
+  const [modalAberto, setModalAberto] = useState(false);
   const navigate = useNavigate();
 
   const carregarUsuario = async () => {
@@ -21,10 +24,27 @@ export default function AdminDashboard() {
   const carregarUsuarios = async () => {
     try {
       const response = await api.get('/usuarios');
-      setUsuarios(response.data);
+      const usuariosOrdenados = response.data.sort((a, b) => {
+        if (a.isAprovado === b.isAprovado) return 0;
+        return a.isAprovado ? 1 : -1;
+      });
+      setUsuarios(usuariosOrdenados);
     } catch (error) {
       console.error("Erro ao carregar usuários:", error);
       alert("Erro ao carregar usuários.");
+    }
+  };
+
+  const carregarDominios = async () => {
+    try {
+      const response = await api.get('/usuarios/dominios');
+      setDominios(response.data);
+      if (response.data.length > 0) {
+        setDominioSelecionado(response.data[0]);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar domínios:", error);
+      alert("Erro ao carregar domínios.");
     }
   };
 
@@ -42,15 +62,34 @@ export default function AdminDashboard() {
   const downloadUsers = async () => {
     try {
       const response = await api.get('/usuarios');
-      const blob = new Blob([JSON.stringify(response.data, null, 2)], {
-        type: 'application/json',
-      });
+      const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
       link.download = 'usuarios.json';
       link.click();
+      URL.revokeObjectURL(link.href);
     } catch (error) {
       alert("Erro ao baixar usuários.");
+    }
+  };
+
+  const downloadUsuariosPorDominio = async () => {
+    if (!dominioSelecionado) {
+      alert("Por favor, selecione um domínio.");
+      return;
+    }
+
+    try {
+      const response = await api.get(`/usuarios/dominio/${dominioSelecionado}`);
+      const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `usuarios_dominio_${dominioSelecionado}.json`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+      setModalAberto(false); // Fecha o modal depois do download
+    } catch (error) {
+      alert("Erro ao baixar os usuários do domínio selecionado.");
     }
   };
 
@@ -62,15 +101,19 @@ export default function AdminDashboard() {
   useEffect(() => {
     carregarUsuario();
     carregarUsuarios();
+    carregarDominios();
   }, []);
 
   return (
     <main className="admin-main">
       <h2 className="admin-title">Painel do Administrador</h2>
 
+      <div className="logout-container">
       <button onClick={handleLogout} className="btn btn-logout">
         Sair
       </button>
+      </div>
+
 
       {admin && (
         <section className="admin-info">
@@ -83,9 +126,40 @@ export default function AdminDashboard() {
         </section>
       )}
 
-      <button onClick={downloadUsers} className="btn btn-download">
-        Baixar usuários em JSON
-      </button>
+      <div className="btn-download-group">
+        <button onClick={downloadUsers} className="btn btn-download btn-small">
+          Baixar usuários Geral
+        </button>
+
+        <button onClick={() => setModalAberto(true)} className="btn btn-download btn-small">
+          Baixar usuários por domínio
+        </button>
+      </div>
+
+      {modalAberto && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Selecione o domínio</h3>
+            <select
+              value={dominioSelecionado}
+              onChange={e => setDominioSelecionado(e.target.value)}
+            >
+              {dominios.map(d => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+
+            <div className="modal-buttons">
+              <button onClick={() => setModalAberto(false)} className="btn btn-cancel">
+                Cancelar
+              </button>
+              <button onClick={downloadUsuariosPorDominio} className="btn btn-confirm">
+                Baixar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="usuarios-lista">
         {usuarios.map((user) => (
@@ -100,10 +174,7 @@ export default function AdminDashboard() {
             )}
 
             {!user.isAprovado && (
-              <button
-                onClick={() => aprovarUsuario(user.id)}
-                className="btn btn-approve"
-              >
+              <button onClick={() => aprovarUsuario(user.id)} className="btn btn-approve btn-small">
                 Aprovar
               </button>
             )}

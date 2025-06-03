@@ -41,19 +41,25 @@ namespace ControleAcessoApi.Controllers
         public IActionResult GetUsuarios()
         {
             var usuarios = _context.Usuarios
-                .Select(u => new
-                {
-                    u.Id,
-                    u.Nome,
-                    u.Email,
-                    u.Idade,
-                    u.Role,
-                    u.IsAprovado,
-                    Aprovador = _context.Usuarios
-                        .Where(ap => ap.Id == u.AprovadorId)
-                        .Select(ap => ap.Nome)
-                        .FirstOrDefault()
-                })
+                .GroupJoin(
+                    _context.Usuarios,
+                    u => u.AprovadorId,
+                    a => a.Id,
+                    (u, aprovadores) => new { u, aprovadores }
+                )
+                .SelectMany(
+                    ua => ua.aprovadores.DefaultIfEmpty(),
+                    (ua, aprovador) => new
+                    {
+                        ua.u.Id,
+                        ua.u.Nome,
+                        ua.u.Email,
+                        ua.u.Idade,
+                        ua.u.Role,
+                        ua.u.IsAprovado,
+                        Aprovador = aprovador != null ? aprovador.Nome : null
+                    }
+                )
                 .ToList();
 
             return Ok(usuarios);
@@ -151,6 +157,47 @@ namespace ControleAcessoApi.Controllers
             });
         }
 
+        // Nova rota para negar usuário
+        [HttpPut("{id}/negar")]
+        [Authorize(Roles = "Admin,Aprovador")]
+        public IActionResult NegarUsuario(int id)
+        {
+            var usuario = _context.Usuarios.Find(id);
+            if (usuario == null)
+                return NotFound();
+
+            var emailLogado = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            if (string.IsNullOrEmpty(emailLogado))
+                return Unauthorized("Email do usuário logado não encontrado.");
+
+            var usuarioLogado = _context.Usuarios.FirstOrDefault(u => u.Email == emailLogado);
+            if (usuarioLogado == null)
+                return Unauthorized();
+
+            var dominioUsuario = usuario.Email!.Split('@').Last().ToLower();
+            var dominioLogado = usuarioLogado.Email!.Split('@').Last().ToLower();
+
+            if (usuarioLogado.Role != "Admin" && dominioUsuario != dominioLogado)
+            {
+                return Forbid("Você só pode negar usuários do mesmo domínio.");
+            }
+
+            usuario.IsAprovado = false;
+            usuario.AprovadorId = usuarioLogado.Id;
+            _context.SaveChanges();
+
+            return Ok(new
+            {
+                usuario.Id,
+                usuario.Nome,
+                usuario.Email,
+                usuario.Idade,
+                usuario.Role,
+                usuario.IsAprovado,
+                usuario.AprovadorId
+            });
+        }
+
         [HttpDelete("{id:int}")]
         [Authorize(Roles = "Admin")]
         public IActionResult DeleteUsuario(int id)
@@ -177,6 +224,88 @@ namespace ControleAcessoApi.Controllers
             _context.SaveChanges();
 
             return Ok("Todos os usuários foram deletados.");
+        }
+
+        [HttpGet("usuarios_dominio")]
+        [Authorize(Roles = "Admin,Aprovador")]
+        public IActionResult GetUsuariosDoMesmoDominio()
+        {
+            var emailLogado = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            if (string.IsNullOrEmpty(emailLogado))
+                return Unauthorized();
+
+            var dominioLogado = emailLogado.Split('@').Last().ToLower();
+
+            var usuariosDoMesmoDominio = _context.Usuarios
+                .Where(u => u.Email.EndsWith("@" + dominioLogado))
+                .GroupJoin(
+                    _context.Usuarios,
+                    u => u.AprovadorId,
+                    a => a.Id,
+                    (u, aprovadores) => new { u, aprovadores }
+                )
+                .SelectMany(
+                    ua => ua.aprovadores.DefaultIfEmpty(),
+                    (ua, aprovador) => new
+                    {
+                        ua.u.Id,
+                        ua.u.Nome,
+                        ua.u.Email,
+                        ua.u.Idade,
+                        ua.u.Role,
+                        ua.u.IsAprovado,
+                        Aprovador = aprovador != null ? aprovador.Nome : null
+                    }
+                )
+                .ToList();
+
+            return Ok(usuariosDoMesmoDominio);
+        }
+
+        [HttpGet("dominios")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetDominios()
+        {
+            var dominios = _context.Usuarios
+                .AsEnumerable()  // trazer para memória para permitir Split e Last
+                .Select(u => u.Email.Split('@').Last().ToLower())
+                .Distinct()
+                .ToList();
+
+            return Ok(dominios);
+        }
+
+        [HttpGet("dominio/{dominio}")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetUsuariosPorDominio(string dominio)
+        {
+            if (string.IsNullOrEmpty(dominio))
+                return BadRequest("Domínio inválido.");
+
+            var usuarios = _context.Usuarios
+                .Where(u => u.Email.ToLower().EndsWith("@" + dominio.ToLower()))
+                .GroupJoin(
+                    _context.Usuarios,
+                    u => u.AprovadorId,
+                    a => a.Id,
+                    (u, aprovadores) => new { u, aprovadores }
+                )
+                .SelectMany(
+                    ua => ua.aprovadores.DefaultIfEmpty(),
+                    (ua, aprovador) => new
+                    {
+                        ua.u.Id,
+                        ua.u.Nome,
+                        ua.u.Email,
+                        ua.u.Idade,
+                        ua.u.Role,
+                        ua.u.IsAprovado,
+                        Aprovador = aprovador != null ? aprovador.Nome : null
+                    }
+                )
+                .ToList();
+
+            return Ok(usuarios);
         }
 
         [HttpGet("me")]
