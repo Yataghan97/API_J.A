@@ -105,7 +105,7 @@ namespace ControleAcessoApi.Controllers
             var dominioLogado = emailLogado.Split('@').Last().ToLower();
 
             var pendentes = _context.Usuarios
-                .Where(u => !u.IsAprovado && u.Email.EndsWith("@" + dominioLogado))
+                .Where(u => u.IsAprovado == null && u.Email.EndsWith("@" + dominioLogado))
                 .Select(u => new
                 {
                     u.Id,
@@ -157,7 +157,6 @@ namespace ControleAcessoApi.Controllers
             });
         }
 
-        // Nova rota para negar usuário
         [HttpPut("{id}/negar")]
         [Authorize(Roles = "Admin,Aprovador")]
         public IActionResult NegarUsuario(int id)
@@ -182,20 +181,11 @@ namespace ControleAcessoApi.Controllers
                 return Forbid("Você só pode negar usuários do mesmo domínio.");
             }
 
-            usuario.IsAprovado = false;
-            usuario.AprovadorId = usuarioLogado.Id;
+            // Aqui você remove o usuário
+            _context.Usuarios.Remove(usuario);
             _context.SaveChanges();
 
-            return Ok(new
-            {
-                usuario.Id,
-                usuario.Nome,
-                usuario.Email,
-                usuario.Idade,
-                usuario.Role,
-                usuario.IsAprovado,
-                usuario.AprovadorId
-            });
+            return Ok(new { message = "Usuário negado e removido com sucesso." });
         }
 
         [HttpDelete("{id:int}")]
@@ -324,7 +314,7 @@ namespace ControleAcessoApi.Controllers
             if (usuario == null)
                 return NotFound();
 
-            if (!usuario.IsAprovado)
+            if (!usuario.IsAprovado == true)
                 return Forbid("Aguardando aprovação.");
 
             return Ok(new

@@ -37,6 +37,7 @@ export default function RegisterPage() {
         role: 'User',
       });
       setErro('');
+      navigate('/');
     } catch {
       setErro('Erro ao cadastrar. Verifique os dados e tente novamente.');
     }

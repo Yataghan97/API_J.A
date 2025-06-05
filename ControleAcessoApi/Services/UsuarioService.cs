@@ -54,7 +54,7 @@ namespace API_Knapp.Services
         public async Task<List<Usuario>> GetUsuariosPendentesPorDominioAsync(string dominio)
         {
             return await _context.Usuarios
-                .Where(u => !u.IsAprovado && u.Email.EndsWith("@" + dominio))
+                .Where(u => (u.IsAprovado == null || u.IsAprovado == false) && u.Email.EndsWith("@" + dominio))
                 .ToListAsync();
         }
 

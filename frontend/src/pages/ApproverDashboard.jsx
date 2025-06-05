@@ -58,7 +58,7 @@ export default function AprovadorDashboard() {
     try {
       await api.put(`/usuarios/${id}/negar`);
       alert('Usuário negado com sucesso!');
-      carregarPendentes();
+      setPendentes(prev => prev.filter(user => user.id !== id)); // Remove da lista
     } catch {
       alert('Erro ao negar usuário.');
     }

@@ -8,29 +8,48 @@ function LoginPage() {
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
   const navigate = useNavigate();
-
   const senhaRef = useRef(null);
 
-  const handleLogin = async () => {
-    try {
-      const response = await api.post('/auth/login', { email, senha });
-      const token = response.data.token;
-      localStorage.setItem('token', token);
+ const handleLogin = async () => {
+  try {
+    const response = await api.post('/auth/login', { email, senha });
+    const token = response.data.token;
+    localStorage.setItem('token', token);
 
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const role = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const role = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
 
-      if (role === 'Admin') navigate('/admin');
-      else if (role === 'Aprovador') navigate('/approver');
-      else navigate('/user');
-    } catch (err) {
-      if (err.response && err.response.status === 401) {
-        setErro(err.response.data); // Mensagem personalizada da API
+    if (role === 'Admin') navigate('/admin');
+    else if (role === 'Aprovador') navigate('/approver');
+    else navigate('/user');
+  } catch (err) {
+    if (err.response) {
+      const status = err.response.status;
+      const mensagem = err.response.data;
+
+      if (status === 401) {
+        if (mensagem === "Usuário não está cadastrado.") {
+          setErro("Usuário não está cadastrado.");
+        } else {
+          setErro("Email ou senha inválidos.");
+        }
+      } else if (status === 403) {
+        if (mensagem === "Seu cadastro ainda não foi aprovado. Aguarde.") {
+          setErro("Seu cadastro ainda não foi aprovado. Aguarde.");
+        } else if (mensagem === "Seu cadastro foi negado pelo administrador.") {
+          setErro("Seu cadastro foi negado pelo administrador.");
+        } else {
+          setErro("Acesso negado.");
+        }
       } else {
-        setErro('Erro ao tentar fazer login. Tente novamente mais tarde.');
+        setErro("Erro ao tentar fazer login. Tente novamente mais tarde.");
       }
+    } else {
+      setErro("Erro de conexão com o servidor.");
     }
-  };
+  }
+};
+
 
   const handleCriarConta = () => {
     navigate('/register');
@@ -45,7 +64,7 @@ function LoginPage() {
       >
         <h2 className="text-xl font-semibold mb-4">Login</h2>
 
-        {/* Campo fake oculto para enganar autocomplete */}
+        {/* Campos fake para desativar autocomplete */}
         <input type="text" name="fakeuser" style={{ display: 'none' }} />
         <input type="password" name="fakepass" style={{ display: 'none' }} />
 
@@ -56,7 +75,10 @@ function LoginPage() {
           placeholder="Email"
           className="input mb-2 w-full"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setErro('');
+          }}
         />
         <input
           type="password"
@@ -65,7 +87,10 @@ function LoginPage() {
           placeholder="Senha"
           className="input mb-4 w-full"
           value={senha}
-          onChange={(e) => setSenha(e.target.value)}
+          onChange={(e) => {
+            setSenha(e.target.value);
+            setErro('');
+          }}
           ref={senhaRef}
         />
         {erro && <p className="text-red-500 text-sm mb-2">{erro}</p>}

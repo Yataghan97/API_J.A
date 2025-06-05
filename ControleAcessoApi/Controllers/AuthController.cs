@@ -24,28 +24,28 @@ namespace ControleAcessoApi.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginDTO loginDto)
         {
-            // Etapa 1: Buscar apenas pelo email
-            var usuario = _context.Usuarios.FirstOrDefault(u => u.Email == loginDto.Email);
+        var usuario = _context.Usuarios.FirstOrDefault(u => u.Email == loginDto.Email);
 
-            // Verifica se o email existe
-            if (usuario == null)
-            {
-                return Unauthorized("Usuário não está cadastrado.");
-            }
+        if (usuario == null)
+        {
+            return Unauthorized("Usuário não encontrado. Pode ter sido removido.");
+        }
 
-            // Verifica se o usuário está aprovado
-            if (!usuario.IsAprovado)
-            {
-                return Unauthorized("Usuário ainda não aprovado. Aguarde aprovação.");
-            }
+        if (usuario.StatusCadastro == "negado")
+        {
+            return StatusCode(403, "Seu cadastro foi negado pelo administrador.");
+        }
 
-            // Verifica se a senha está correta
-            if (usuario.Senha != loginDto.Senha)
-            {
-                return Unauthorized("Email ou senha inválidos.");
-            }
+        if (usuario.StatusCadastro == "pendente" || usuario.IsAprovado == null)
+        {
+            return StatusCode(403, "Seu cadastro ainda não foi aprovado. Aguarde.");
+        }
 
-            // Autenticação válida — gera o token
+        if (usuario.Senha != loginDto.Senha)
+        {
+            return Unauthorized("Email ou senha inválidos.");
+        }
+            // Login OK - Geração de token
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name, usuario.Email),
@@ -67,6 +67,5 @@ namespace ControleAcessoApi.Controllers
 
             return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
         }
-
     }
 }

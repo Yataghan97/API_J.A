@@ -34,6 +34,15 @@ export default function AdminDashboard() {
       alert("Erro ao carregar usuários.");
     }
   };
+    const negarUsuario = async (id) => {
+    try {
+      await api.put(`/usuarios/${id}/negar`);
+      alert('Usuário negado com sucesso!');
+      carregarUsuarios();
+    } catch {
+      alert('Erro ao negar usuário.');
+    }
+  };
 
   const carregarDominios = async () => {
     try {
@@ -172,12 +181,23 @@ export default function AdminDashboard() {
             {user.isAprovado && user.aprovador && (
               <p><strong>Aprovado por:</strong> {user.aprovador}</p>
             )}
-
-            {!user.isAprovado && (
-              <button onClick={() => aprovarUsuario(user.id)} className="btn btn-approve btn-small">
+           {!user.isAprovado && (
+            <div className="btn-action-group">
+              <button
+                onClick={() => aprovarUsuario(user.id)}
+                className="btn btn-approve btn-small"
+              >
                 Aprovar
               </button>
-            )}
+
+              <button
+                onClick={() => negarUsuario(user.id)}
+                className="btn btn-deny btn-small"
+              >
+                Negar
+              </button>
+            </div>
+          )}                      
           </div>
         ))}
       </div>
