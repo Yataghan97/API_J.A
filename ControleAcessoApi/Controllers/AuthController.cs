@@ -24,28 +24,17 @@ namespace ControleAcessoApi.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginDTO loginDto)
         {
-        var usuario = _context.Usuarios.FirstOrDefault(u => u.Email == loginDto.Email);
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Email == loginDto.Email);
 
-        if (usuario == null)
-        {
-            return Unauthorized("Usuário não encontrado. Pode ter sido removido.");
-        }
+            if (usuario == null)
+                return Unauthorized("Usuário não encontrado. Pode ter sido removido.");
 
-        if (usuario.StatusCadastro == "negado")
-        {
-            return StatusCode(403, "Seu cadastro foi negado pelo administrador.");
-        }
+            if (usuario.IsAprovado != true)
+                return StatusCode(403, "Seu cadastro ainda não foi aprovado. Aguarde.");
 
-        if (usuario.StatusCadastro == "pendente" || usuario.IsAprovado == null)
-        {
-            return StatusCode(403, "Seu cadastro ainda não foi aprovado. Aguarde.");
-        }
+            if (usuario.Senha != loginDto.Senha)
+                return Unauthorized("Email ou senha inválidos.");
 
-        if (usuario.Senha != loginDto.Senha)
-        {
-            return Unauthorized("Email ou senha inválidos.");
-        }
-            // Login OK - Geração de token
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name, usuario.Email),

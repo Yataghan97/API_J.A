@@ -314,7 +314,7 @@ namespace ControleAcessoApi.Controllers
             if (usuario == null)
                 return NotFound();
 
-            if (!usuario.IsAprovado == true)
+            if (usuario.IsAprovado != true)
                 return Forbid("Aguardando aprovação.");
 
             return Ok(new
